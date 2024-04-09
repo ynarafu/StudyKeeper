@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct TimerView: View {
     @State var path = NavigationPath()
     @State private var value: CGFloat = 0.7
     @State var isPresented = false
     @State var isCounwtDown = false
+    @AppStorage("workTime") var workTime = 25
+    @AppStorage("restTime") var restTime = 5
+    @Environment(\.modelContext) private var context
+    @Query private var studyDatas: [StudyData]
     
     
     var body: some View {
@@ -36,8 +41,10 @@ struct TimerView: View {
                     }
                     
                     HStack(spacing: geometry.size.width/5) {
-                        Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
-                            Text("STOP")
+                        Button(action: {
+                            self.isCounwtDown = false
+                        }, label: {
+                            Text("FINISH")
                                 .circleButton(.mint.opacity(0.5))
                         })
                         .disabled(!self.isCounwtDown)
@@ -49,7 +56,7 @@ struct TimerView: View {
                                     .circleButton(.mint.opacity(0.5))
                             }
                             else {
-                                Text("Finish")
+                                Text("STOP")
                                     .circleButton(.orange.opacity(0.5))
                             }
                         })
@@ -64,6 +71,15 @@ struct TimerView: View {
             }
         }
     }
+    
+    private func add(spentTime: Int, goalTime: Int, content: String? = nil) {
+        let data = StudyData(spentTime: spentTime, goalTime: goalTime, content: content)
+        context.insert(data)
+    }
+    private func delete(studyData: StudyData) {
+        context.delete(studyData)
+    }
+    
 }
 
 extension Text {
@@ -83,6 +99,7 @@ struct TimerGauge: View {
     private let maxValue: CGFloat
     var frameSize: Double
     let gradient = LinearGradient(colors: [.mint, .green], startPoint: .leading, endPoint: .trailing)
+    
     
     init(_ value: Binding<CGFloat>, maxValue: CGFloat, parentSize: CGSize) {
         self._value = value
@@ -132,4 +149,5 @@ struct TimerGauge: View {
  
 #Preview {
     TimerView()
+        .modelContainer(for: StudyData.self)
 }

@@ -12,6 +12,7 @@ struct StudyKeeperApp: App {
     var body: some Scene {
         WindowGroup {
             TimerView()
+                .modelContainer(for: StudyData.self)
         }
     }
 }

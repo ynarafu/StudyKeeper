@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A45E55132BC50AB300C35B91 /* StudyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A45E55122BC50AB300C35B91 /* StudyData.swift */; };
 		A4FB217B2BBE22F700BE9FCD /* StudyKeeperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FB217A2BBE22F700BE9FCD /* StudyKeeperApp.swift */; };
 		A4FB217D2BBE22F700BE9FCD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FB217C2BBE22F700BE9FCD /* ContentView.swift */; };
 		A4FB217F2BBE22F900BE9FCD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4FB217E2BBE22F900BE9FCD /* Assets.xcassets */; };
@@ -35,6 +36,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A45E55122BC50AB300C35B91 /* StudyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyData.swift; sourceTree = "<group>"; };
 		A4FB21772BBE22F700BE9FCD /* StudyKeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StudyKeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4FB217A2BBE22F700BE9FCD /* StudyKeeperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyKeeperApp.swift; sourceTree = "<group>"; };
 		A4FB217C2BBE22F700BE9FCD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 		A4FB21792BBE22F700BE9FCD /* StudyKeeper */ = {
 			isa = PBXGroup;
 			children = (
+				A45E55122BC50AB300C35B91 /* StudyData.swift */,
 				A4FB217A2BBE22F700BE9FCD /* StudyKeeperApp.swift */,
 				A4FB217C2BBE22F700BE9FCD /* ContentView.swift */,
 				A4FB21A42BBE2EBF00BE9FCD /* CalenderView.swift */,
@@ -261,6 +264,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A4FB217D2BBE22F700BE9FCD /* ContentView.swift in Sources */,
+				A45E55132BC50AB300C35B91 /* StudyData.swift in Sources */,
 				A4FB217B2BBE22F700BE9FCD /* StudyKeeperApp.swift in Sources */,
 				A4FB21A52BBE2EBF00BE9FCD /* CalenderView.swift in Sources */,
 			);
