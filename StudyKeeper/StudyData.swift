@@ -10,21 +10,21 @@ import SwiftData
 
 @Model
 final class StudyData {
-    var date: String
-    var spentTime: Int
-    let goalTime: Int
-    let content: String?
+    var dDate: String
+    var dSpentTime: Int
+    let dGoalTime: Int
+    let dContent: String?
 
     init(spentTime: Int, goalTime: Int, content: String? = nil) {
-        self.date = getToday()
-        self.spentTime = spentTime
-        self.goalTime = goalTime
-        self.content = content
+        self.dDate = getToday()
+        self.dSpentTime = spentTime
+        self.dGoalTime = goalTime
+        self.dContent = content
     }
     
     func calcAchievementRate() -> Int {
         var achieventRate: Int
-        achieventRate = self.spentTime * 10 / self.goalTime
+        achieventRate = self.dSpentTime * 10 / self.dGoalTime
         return achieventRate * 10 //パーセントで返す
     }
 }

@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct CalenderView: View {
+    @Binding var goalTime: Int
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text("comming soon!")
     }
 }
 
 #Preview {
-    CalenderView()
+    CalenderView(goalTime: .constant(60*60))
 }
