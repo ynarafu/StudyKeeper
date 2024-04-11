@@ -2,7 +2,7 @@
 //  StudyKeeperTests.swift
 //  StudyKeeperTests
 //
-//  Created by FW-ynarafu on 2024/04/04.
+//  Created by ynarafu on 2024/04/04.
 //
 
 import XCTest

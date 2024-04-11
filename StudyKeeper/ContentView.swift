@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  StudyKeeper
 //
-//  Created by FW-ynarafu on 2024/04/04.
+//  Created by ynarafu on 2024/04/04.
 //
 
 import SwiftUI
@@ -15,15 +15,17 @@ struct TimerView: View {
     @State var isPresented = false
     @State var isCounwtDown = false
     @State var isWorking = true
+    @State var isShowSetting = false
     @State var status: Array = ["working", "resting"]
     @State var content = ""
     @State var spentTime = 0  //second
     @State var counter = 0 //second
+    @State var time: String = "00:00:00"
     
-    @AppStorage("workTime") var workTime = 3  //25m×60s
-    @AppStorage("restTime") var restTime = 5   //5m×60s
-    @AppStorage("goalTime") var goalTime: Int = 1 * 60 * 60 //1h*60min*60sec
-    @State var time: String = intToTime(value: 3)
+    @AppStorage("workTime") var workTime = 60   //second
+    @AppStorage("restTime") var restTime = 120   //second
+    @AppStorage("goalTime") var goalTime: Int = 1 * 60 * 60 //second
+    
     @AppStorage("lastDay") var lastDay = "1800/1/1"
     @Environment(\.modelContext) private var context
     @Query private var studyDatas: [StudyData]
@@ -46,7 +48,20 @@ struct TimerView: View {
                         })
                         .frame(width: geometry.size.width*4/5, alignment: .trailing)
                         
-                        TimerGauge($value, status: status[isWorking ? 0:1], time: time, parentSize: geometry.size)
+                        TimerGauge($value, status: self.status[isWorking ? 0:1], time: self.time, parentSize: geometry.size)
+                            .onTapGesture {
+                                self.isShowSetting = true
+                            }
+                            .sheet(isPresented: $isShowSetting) {
+                                SettingView()
+                                    .presentationDetents([.medium])
+                            }
+                            .onAppear() {
+                                self.time = self.calcRemainTime()
+                            }
+                            .onChange(of: isShowSetting) {
+                                self.time = self.calcRemainTime()
+                            }
                     }
                     
                     HStack(spacing: geometry.size.width/5) {
@@ -86,7 +101,7 @@ struct TimerView: View {
         }
     }
     func calcProgress() {
-        if isWorking {
+        if self.isWorking {
             self.value = Double(self.workTime - self.counter) / Double(self.workTime)
         }
         else {
@@ -94,45 +109,50 @@ struct TimerView: View {
         }
     }
     
+    func calcRemainTime() -> String {
+        let maxTime = self.isWorking ? self.workTime : self.restTime
+        return intToTime(value: maxTime - self.counter)
+    }
+    
     func countDownTimer(){
         var countTime: Int
         
-        countTime = isWorking ? workTime : restTime
-        spentTime += isWorking ? 1:0
-        counter += 1
-        if countTime - counter <= 0{
-            isWorking.toggle()
-            countTime = isWorking ? workTime : restTime
-            counter = 0
-            timerHandler?.invalidate()
-            timerHandler = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-                countDownTimer()
+        countTime = self.isWorking ? self.workTime : self.restTime
+        self.spentTime += self.isWorking ? 1:0
+        self.counter += 1
+        if countTime - self.counter <= 0{
+            self.isWorking.toggle()
+            countTime = self.isWorking ? self.workTime : self.restTime
+            self.counter = 0
+            self.timerHandler?.invalidate()
+            self.timerHandler = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+                self.countDownTimer()
             })
         }
-        time = intToTime(value: countTime - counter)
-        calcProgress()
+        self.time = intToTime(value: countTime - self.counter)
+        self.calcProgress()
     }
     
     func startTimer() {
         var countTime: Int
         
-        countTime = isWorking ? workTime : restTime
-        if let unwrapedTimerHandler = timerHandler {
+        countTime = self.isWorking ? self.workTime : self.restTime
+        if let unwrapedTimerHandler = self.timerHandler {
             if unwrapedTimerHandler.isValid == true {
                 return
             }
         }
-        if countTime - counter <= 0 {
-            counter = 0
+        if countTime - self.counter <= 0 {
+            self.counter = 0
         }
-        timerHandler = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            countDownTimer()
+        self.timerHandler = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            self.countDownTimer()
         })
         self.isCounwtDown = true
     }
     
     func stopTimer() {
-        if let unwrapedTimerHandler = timerHandler {
+        if let unwrapedTimerHandler = self.timerHandler {
             if unwrapedTimerHandler.isValid == true {
                 unwrapedTimerHandler.invalidate()
             }
@@ -141,8 +161,8 @@ struct TimerView: View {
     }
     
     func finishTimer() {
-        var today = getToday()
-        if let unwrapedTimerHandler = timerHandler {
+        let today = getToday()
+        if let unwrapedTimerHandler = self.timerHandler {
             if unwrapedTimerHandler.isValid == true {
                 unwrapedTimerHandler.invalidate()
             }
@@ -150,13 +170,13 @@ struct TimerView: View {
         self.isCounwtDown = false
         self.isWorking = true
         self.counter = 0
-        calcProgress()
-        self.time = intToTime(value: workTime)
+        self.calcProgress()
+        self.time = intToTime(value: self.workTime)
         if self.lastDay == today {
-            updateSpendTime(date: today, spentTime: spentTime)
+            self.updateSpendTime(date: today, spentTime: self.spentTime)
         }
         else {
-            add(spentTime: self.spentTime, goalTime: self.goalTime)
+            self.add(spentTime: self.spentTime, goalTime: self.goalTime)
             self.lastDay = today
         }
         self.spentTime = 0
@@ -164,17 +184,17 @@ struct TimerView: View {
     
     private func add(spentTime: Int, goalTime: Int, content: String? = nil) {
         let data = StudyData(spentTime: spentTime, goalTime: goalTime, content: content)
-        context.insert(data)
+        self.context.insert(data)
         self.lastDay = getToday()
     }
     private func delete(studyData: StudyData) {
-        context.delete(studyData)
+        self.context.delete(studyData)
     }
     private func updateSpendTime(date: String, spentTime: Int) {
-        let updatingIndex = studyDatas.firstIndex { $0.dDate == date }
+        let updatingIndex = self.studyDatas.firstIndex { $0.dDate == date }
         guard let updatingIndex else { return }
-        studyDatas[updatingIndex].dSpentTime += spentTime
-        try? context.save()
+        self.studyDatas[updatingIndex].dSpentTime += spentTime
+        try? self.context.save()
     }
 }
 
@@ -196,7 +216,6 @@ struct TimerGauge: View {
     private let time: String
     var frameSize: Double
     let gradient = LinearGradient(colors: [.mint, .green], startPoint: .leading, endPoint: .trailing)
-    
     
     init(_ value: Binding<CGFloat>, status: String, time: String, parentSize: CGSize) {
         self._value = value
@@ -245,12 +264,79 @@ struct TimerGauge: View {
     }
 }
 
+
+struct SettingView: View {
+    @AppStorage("workTime") var workTime = 25 * 60
+    @AppStorage("restTime") var restTime = 5 * 60
+    @State private var workTimeDate = Date()
+    @State private var restTimeDate = Date()
+    @State private var isShowSheet = false
+    
+    var body: some View {
+        VStack {
+            DatePicker("Work time",
+                       selection: $workTimeDate,
+                       displayedComponents: [.hourAndMinute]
+            )
+            .onAppear{
+                var dateComponents = DateComponents()
+                dateComponents.hour = self.workTime / 3600
+                dateComponents.minute = (self.workTime / 60) % 60
+                let userCalendar = Calendar.current
+                self.workTimeDate = userCalendar.date(from: dateComponents) ?? Date()
+            }
+            .onChange(of: workTimeDate, {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "HH:mm"
+                let timeString = formatter.string(from: self.workTimeDate)
+                workTime = timeToInt(value: timeString) ?? 0
+                
+            })
+            .fixedSize()
+            .padding()
+            DatePicker("Rest time",
+                       selection: $restTimeDate,
+                       displayedComponents: [.hourAndMinute]
+            )
+            .onAppear{
+                var dateComponents = DateComponents()
+                dateComponents.hour = self.restTime / 3600
+                dateComponents.minute = (self.restTime / 60) % 60
+                let userCalendar = Calendar.current
+                self.restTimeDate = userCalendar.date(from: dateComponents) ?? Date()
+            }
+            .onChange(of: restTimeDate, {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "HH:mm"
+                let timeString = formatter.string(from: self.restTimeDate)
+                restTime = timeToInt(value: timeString) ?? 0
+                
+            })
+            .fixedSize()
+            .padding()
+        }
+    }
+}
+
 func intToTime(value: Int) -> String {
     let hours = value / 3600
         let minutes = (value % 3600) / 60
         let seconds = (value % 3600) % 60
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
 }
+
+func timeToInt(value: String) -> Int? {
+    let timeComponents = value.split(separator: ":")
+
+        guard timeComponents.count == 2,
+              let hours = Int(timeComponents[0]),
+              let minutes = Int(timeComponents[1]) else {
+            return nil
+        }
+
+        let totalSeconds = hours * 3600 + minutes * 60
+        return totalSeconds
+}   //hh:mm形式
 
 
 #Preview {

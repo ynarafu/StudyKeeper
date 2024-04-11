@@ -2,7 +2,7 @@
 //  StudyData.swift
 //  StudyKeeper
 //
-//  Created by FW-ynarafu on 2024/04/09.
+//  Created by ynarafu on 2024/04/09.
 //
 
 import Foundation
