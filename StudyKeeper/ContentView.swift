@@ -22,8 +22,8 @@ struct TimerView: View {
     @State var counter = 0 //second
     @State var time: String = "00:00:00"
     
-    @AppStorage("workTime") var workTime = 60   //second
-    @AppStorage("restTime") var restTime = 120   //second
+    @AppStorage("workTime") var workTime: Int = 60   //second
+    @AppStorage("restTime") var restTime: Int = 120   //second
     @AppStorage("goalTime") var goalTime: Int = 1 * 60 * 60 //second
     
     @AppStorage("lastDay") var lastDay = "1800/1/1"
@@ -95,7 +95,7 @@ struct TimerView: View {
                 .navigationTitle("Pomodoro")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(isPresented: $isPresented) {
-                    CalenderView(goalTime: $goalTime)
+                    CalendarView()
                 }
             }
         }
@@ -268,8 +268,10 @@ struct TimerGauge: View {
 struct SettingView: View {
     @AppStorage("workTime") var workTime = 25 * 60
     @AppStorage("restTime") var restTime = 5 * 60
+    @AppStorage("goalTime") var goalTime = 1 * 60 * 60
     @State private var workTimeDate = Date()
     @State private var restTimeDate = Date()
+    @State private var goalTimeDate = Date()
     @State private var isShowSheet = false
     
     var body: some View {
@@ -311,6 +313,25 @@ struct SettingView: View {
                 let timeString = formatter.string(from: self.restTimeDate)
                 restTime = timeToInt(value: timeString) ?? 0
                 
+            })
+            .fixedSize()
+            .padding()
+            DatePicker("Goal time",
+                       selection: $goalTimeDate,
+                       displayedComponents: [.hourAndMinute]
+            )
+            .onAppear{
+                var dateComponents = DateComponents()
+                dateComponents.hour = self.goalTime / 3600
+                dateComponents.minute = (self.goalTime / 60) % 60
+                let userCalendar = Calendar.current
+                self.goalTimeDate = userCalendar.date(from: dateComponents) ?? Date()
+            }
+            .onChange(of: goalTimeDate, {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "HH:mm"
+                let timeString = formatter.string(from: self.goalTimeDate)
+                goalTime = timeToInt(value: timeString) ?? 0
             })
             .fixedSize()
             .padding()

@@ -27,8 +27,8 @@ final class StudyData {
         achieventRate = self.dSpentTime * 10 / self.dGoalTime
         return achieventRate * 10 //パーセントで返す
     }
+    
 }
-
 
 func getToday() -> String {
     let dateFormatter = DateFormatter()
