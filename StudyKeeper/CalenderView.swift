@@ -68,17 +68,19 @@ struct CustomCalendarView: UIViewRepresentable {
 struct DailyView : View {
     
     @Binding var dateSelected: DateComponents?
-    @Query(sort: \StudyData.dDate) private var studyDatas: [StudyData]
+    //@Environment(\.modelContext) private var context
+    //@Query private var studyDatas: [StudyData]
+    var aStudyData: StudyData
     
     var body: some View {
         if let dateSelected {
-            ForEach(studyDatas) {studydata in
-                Text(String(dateSelected.day!))
-            }
+             
+                aStudyData = await StudyDataService.shared.searchStudyDatas(keyword: dateToString(date: dateSelected))
+             
         }
     }
 }
 
 #Preview {
-    CalendarView()
+    CalendarView().modelContainer(for: StudyData.self)
 }

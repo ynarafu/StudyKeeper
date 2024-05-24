@@ -22,8 +22,8 @@ struct TimerView: View {
     @State var counter = 0 //second
     @State var time: String = "00:00:00"
     
-    @AppStorage("workTime") var workTime: Int = 60   //second
-    @AppStorage("restTime") var restTime: Int = 120   //second
+    @AppStorage("workTime") var workTime: Int = 25 * 60   //second
+    @AppStorage("restTime") var restTime: Int = 5 * 60   //second
     @AppStorage("goalTime") var goalTime: Int = 1 * 60 * 60 //second
     
     @AppStorage("lastDay") var lastDay = "1800/1/1"
@@ -66,8 +66,9 @@ struct TimerView: View {
                     
                     HStack(spacing: geometry.size.width/5) {
                         Button(action: {
-                            finishTimer()
-                            
+                            Task {
+                                await finishTimer()
+                            }
                         }, label: {
                             Text("FINISH")
                                 .circleButton(.mint.opacity(0.5))
@@ -95,7 +96,7 @@ struct TimerView: View {
                 .navigationTitle("Pomodoro")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(isPresented: $isPresented) {
-                    CalendarView()
+                    CalendarView().modelContainer(for: StudyData.self)
                 }
             }
         }
@@ -160,8 +161,8 @@ struct TimerView: View {
         self.isCounwtDown = false
     }
     
-    func finishTimer() {
-        let today = getToday()
+    func finishTimer() async {
+        let today = dateToString(date: Date())
         if let unwrapedTimerHandler = self.timerHandler {
             if unwrapedTimerHandler.isValid == true {
                 unwrapedTimerHandler.invalidate()
@@ -176,16 +177,21 @@ struct TimerView: View {
             self.updateSpendTime(date: today, spentTime: self.spentTime)
         }
         else {
-            self.add(spentTime: self.spentTime, goalTime: self.goalTime)
+            await self.create(inSpentTime: self.spentTime, inGoalTime: self.goalTime)
             self.lastDay = today
         }
         self.spentTime = 0
     }
     
+    private func create(inSpentTime: Int, inGoalTime: Int, content: String? = nil) async {
+        await StudyDataService.shared.createStudyData(inSpentTime: inSpentTime, inGoalTime: inGoalTime)
+        self.lastDay = dateToString(date: Date())
+    }
+    
     private func add(spentTime: Int, goalTime: Int, content: String? = nil) {
         let data = StudyData(spentTime: spentTime, goalTime: goalTime, content: content)
         self.context.insert(data)
-        self.lastDay = getToday()
+        self.lastDay = dateToString(date: Date())
     }
     private func delete(studyData: StudyData) {
         self.context.delete(studyData)

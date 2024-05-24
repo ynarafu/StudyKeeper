@@ -10,13 +10,15 @@ import SwiftData
 
 @Model
 final class StudyData {
+    var id: UUID
     var dDate: String
     var dSpentTime: Int
     let dGoalTime: Int
-    let dContent: String?
+    var dContent: String?
 
     init(spentTime: Int, goalTime: Int, content: String? = nil) {
-        self.dDate = getToday()
+        self.id = UUID()
+        self.dDate = dateToString(date: Date())
         self.dSpentTime = spentTime
         self.dGoalTime = goalTime
         self.dContent = content
@@ -30,12 +32,15 @@ final class StudyData {
     
 }
 
-func getToday() -> String {
+func dateToString(date: Date) -> String {
     let dateFormatter = DateFormatter()
+    let japaneseDate : String
     dateFormatter.dateStyle = .long
     dateFormatter.timeStyle = .none
     // 日本の日付表示
     dateFormatter.locale = Locale(identifier: "ja_JP")
-    let japaneseDate = dateFormatter.string(from: Date())
+    guard let japaneseDate = dateFormatter.string(for: date) else {
+        return ""
+    }
     return japaneseDate
 }
