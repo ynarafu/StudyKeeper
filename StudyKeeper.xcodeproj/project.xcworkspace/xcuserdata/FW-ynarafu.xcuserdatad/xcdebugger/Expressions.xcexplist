@@ -3,6 +3,17 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "closure #2 in DailyView.body.getter:CalenderView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "studyDatas">
+            </PersistentString>
+            <PersistentString
+               value = "aStudyData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "TimerView.countDownTimer():ContentView.swift">
          <PersistentStrings>
             <PersistentString
@@ -13,14 +24,6 @@
             </PersistentString>
             <PersistentString
                value = "time">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "getToday():StudyData.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "Date()">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -36,10 +39,13 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "closure #1 in closure #1 in closure #1 in TimerView.body.getter:ContentView.swift">
+         contextName = "closure #1 in DailyView.body.getter:CalenderView.swift">
          <PersistentStrings>
             <PersistentString
-               value = "time">
+               value = "date.date!">
+            </PersistentString>
+            <PersistentString
+               value = "aStudyData">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -48,6 +54,22 @@
          <PersistentStrings>
             <PersistentString
                value = "time">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in closure #1 in TimerView.body.getter:ContentView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "time">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "getToday():StudyData.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "Date()">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

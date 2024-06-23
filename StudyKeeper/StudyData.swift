@@ -34,7 +34,7 @@ final class StudyData {
 
 func dateToString(date: Date) -> String {
     let dateFormatter = DateFormatter()
-    let japaneseDate : String
+
     dateFormatter.dateStyle = .long
     dateFormatter.timeStyle = .none
     // 日本の日付表示

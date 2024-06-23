@@ -4,7 +4,7 @@ import SwiftData
 struct CalendarView: View {
     @State private var dateSelected: DateComponents?
     @State var isShowDailyModal: Bool = false
-    @Query private var studyDatas: [StudyData]
+    //@Query private var studyDatas: [StudyData]
     
     var body: some View {
         CustomCalendarView(dateSelected: $dateSelected, isShowDailyModal: $isShowDailyModal)
@@ -22,6 +22,7 @@ struct CustomCalendarView: UIViewRepresentable {
     
     func makeUIView(context: Context) -> UICalendarView {
         let view = UICalendarView()
+        view.locale = Locale(identifier: "ja-JP")
         view.delegate = context.coordinator
         view.calendar = Calendar(identifier: .gregorian)
         let dateSelection = UICalendarSelectionSingleDate(delegate: context.coordinator)
@@ -68,19 +69,82 @@ struct CustomCalendarView: UIViewRepresentable {
 struct DailyView : View {
     
     @Binding var dateSelected: DateComponents?
+    //@Query(sort: \StudyData.dDate) private var studyDatas: [StudyData]
     //@Environment(\.modelContext) private var context
-    //@Query private var studyDatas: [StudyData]
-    var aStudyData: StudyData
+    @Query private var studyDatas: [StudyData]
+    @State private var aStudyData: [StudyData] = []
+    @State private var text: String = "swiftUI\nstoryboard"
     
     var body: some View {
-        if let dateSelected {
-             
-                aStudyData = await StudyDataService.shared.searchStudyDatas(keyword: dateToString(date: dateSelected))
-             
+        
+        VStack {
+            if let date = dateSelected {
+                Text(mDateFromDateSelect(inDateSelect: date))
+                    .font(.title)
+                    .padding()
+            }
+            HStack {
+                VStack (alignment: .leading) {
+                    Text("勉強時間：")
+                        .font(.title2)
+                    Text("目標時間：")
+                        .font(.title2)
+                    Text("達成率：")
+                        .font(.title2)
+                    Text("実施内容：")
+                        .font(.title2)
+                }
+                VStack (alignment: .leading) {
+                    if !aStudyData.isEmpty {
+                        Text("\(aStudyData[0].dSpentTime)")
+                            .font(.title2)
+                        Text("\(aStudyData[0].dGoalTime)")
+                            .font(.title2)
+                        Text("x %")
+                            .font(.title2)
+                    }
+                    else {
+                        Text("00:00:00")
+                            .font(.title2)
+                        Divider()
+                        Text("00:00:00")
+                            .font(.title2)
+                        Text("x %")
+                            .font(.title2)
+                        Text(" ")
+                            .font(.title2)
+                    }
+                }
+                
+                Spacer()
+            }
+            .padding(.horizontal)
+            TextField("名前を入力してください", text: $text, axis: .vertical)
+                .textFieldStyle(.roundedBorder)
+                .padding(.horizontal)
+                .font(.title2)
+            Spacer()
+        }
+        .task {
+            guard let dateComp = dateSelected,
+                  let aDate = Calendar.current.date(from: dateComp) else { return }
+            aStudyData = await StudyDataService.shared.searchStudyDatas(keyword: dateToString(date: aDate))
         }
     }
+    func mDateFromDateSelect(inDateSelect:DateComponents) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "ydMMM", options: 0, locale: Locale(identifier: "ja_JP"))
+        
+        let calendar = Calendar.current
+        if let date = calendar.date(from: inDateSelect) {
+            return formatter.string(from: date)
+          } else {
+            return "Invalid Date"
+          }
+    }
 }
-
+    
 #Preview {
     CalendarView().modelContainer(for: StudyData.self)
 }
