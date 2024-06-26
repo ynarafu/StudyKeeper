@@ -8,7 +8,9 @@ struct CalendarView: View {
     
     var body: some View {
         CustomCalendarView(dateSelected: $dateSelected, isShowDailyModal: $isShowDailyModal)
-            .sheet(isPresented: $isShowDailyModal) {
+            .sheet(isPresented: $isShowDailyModal, onDismiss: {
+                dateSelected = nil
+            }) {
                 DailyView(dateSelected: $dateSelected)
                     .presentationDetents([.medium])
             }
@@ -36,7 +38,11 @@ struct CustomCalendarView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UICalendarView, context: Context) {
-        
+        if dateSelected == nil {
+            if let dateSelection = uiView.selectionBehavior as? UICalendarSelectionSingleDate {
+                dateSelection.selectedDate = nil // リセット処理
+            }
+        }
     }
     
     class Coordinator: NSObject, UICalendarViewDelegate ,UICalendarSelectionSingleDateDelegate{
@@ -47,9 +53,17 @@ struct CustomCalendarView: UIViewRepresentable {
             self.parent = parent
         }
         func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -> UICalendarView.Decoration? {
+            
+            var aStudyData: [StudyData] = []
+            
             let color100 = UIColor(red: 97/255, green: 130/255, blue: 100/255, alpha: 1.0)
             let color80 = UIColor(red: 121/255, green: 172/255, blue: 120/255, alpha: 1.0)
             let color60 = UIColor(red: 176/255, green: 217/255, blue: 177/255, alpha: 1.0)
+            let aDate = Calendar.current.date(from: dateComponents)
+            Task {
+                aStudyData =  await StudyDataService.shared.searchStudyDatas(keyword: dateToString(date: aDate!))
+                // 更新が必要な場合は適切なUI更新を行う
+            }
             
             return .default(color: color60, size: .large)
         }
@@ -84,41 +98,9 @@ struct DailyView : View {
                     .padding()
             }
             HStack {
-                VStack (alignment: .leading) {
-                    Text("勉強時間：")
-                        .font(.title2)
-                    Text("目標時間：")
-                        .font(.title2)
-                    Text("達成率：")
-                        .font(.title2)
-                    Text("実施内容：")
-                        .font(.title2)
-                }
-                VStack (alignment: .leading) {
-                    if !aStudyData.isEmpty {
-                        Text("\(aStudyData[0].dSpentTime)")
-                            .font(.title2)
-                        Text("\(aStudyData[0].dGoalTime)")
-                            .font(.title2)
-                        Text("x %")
-                            .font(.title2)
-                    }
-                    else {
-                        Text("00:00:00")
-                            .font(.title2)
-                        Divider()
-                        Text("00:00:00")
-                            .font(.title2)
-                        Text("x %")
-                            .font(.title2)
-                        Text(" ")
-                            .font(.title2)
-                    }
-                }
-                
-                Spacer()
+                //Text("\(aStudyData[0].dGoalTime)")
             }
-            .padding(.horizontal)
+
             TextField("名前を入力してください", text: $text, axis: .vertical)
                 .textFieldStyle(.roundedBorder)
                 .padding(.horizontal)
