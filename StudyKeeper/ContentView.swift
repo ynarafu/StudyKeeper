@@ -24,7 +24,7 @@ struct TimerView: View {
     
     @AppStorage("workTime") var workTime: Int = 25 * 60   //second
     @AppStorage("restTime") var restTime: Int = 5 * 60   //second
-    @AppStorage("goalTime") var goalTime: Int = 1 * 60 * 60 //second
+    @AppStorage("goalTime") var goalTime: Int = 1// * 60 * 60 //second
     
     @AppStorage("lastDay") var lastDay = "1800/1/1"
     @Environment(\.modelContext) private var context
@@ -174,7 +174,7 @@ struct TimerView: View {
         self.calcProgress()
         self.time = intToTime(value: self.workTime)
         if self.lastDay == today {
-            self.updateSpendTime(date: today, spentTime: self.spentTime)
+            self.updateSpendTime(date: today, inSpentTime: self.spentTime, inGoalTime: self.goalTime)
         }
         else {
             await self.create(inSpentTime: self.spentTime, inGoalTime: self.goalTime)
@@ -196,10 +196,11 @@ struct TimerView: View {
     private func delete(studyData: StudyData) {
         self.context.delete(studyData)
     }
-    private func updateSpendTime(date: String, spentTime: Int) {
+    private func updateSpendTime(date: String, inSpentTime: Int, inGoalTime:Int) {
         let updatingIndex = self.studyDatas.firstIndex { $0.dDate == date }
         guard let updatingIndex else { return }
         self.studyDatas[updatingIndex].dSpentTime += spentTime
+        self.studyDatas[updatingIndex].dGoalTime = goalTime
         try? self.context.save()
     }
 }
@@ -274,7 +275,7 @@ struct TimerGauge: View {
 struct SettingView: View {
     @AppStorage("workTime") var workTime = 25 * 60
     @AppStorage("restTime") var restTime = 5 * 60
-    @AppStorage("goalTime") var goalTime = 1 * 60 * 60
+    @AppStorage("goalTime") var goalTime = 1// * 60 * 60
     @State private var workTimeDate = Date()
     @State private var restTimeDate = Date()
     @State private var goalTimeDate = Date()

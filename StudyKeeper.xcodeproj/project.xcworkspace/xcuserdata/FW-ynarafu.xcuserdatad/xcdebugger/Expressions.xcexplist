@@ -6,10 +6,10 @@
          contextName = "closure #2 in DailyView.body.getter:CalenderView.swift">
          <PersistentStrings>
             <PersistentString
-               value = "studyDatas">
+               value = "aStudyData">
             </PersistentString>
             <PersistentString
-               value = "aStudyData">
+               value = "studyDatas">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -28,6 +28,14 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "closure #1 in closure #1 in DailyView.body.getter:CalenderView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "aStudyData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "closure #1 in closure #1 in SettingView.body.getter:ContentView.swift">
          <PersistentStrings>
             <PersistentString
@@ -39,21 +47,10 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "closure #1 in DailyView.body.getter:CalenderView.swift">
+         contextName = "TimerView.finishTimer():ContentView.swift">
          <PersistentStrings>
             <PersistentString
-               value = "date.date!">
-            </PersistentString>
-            <PersistentString
-               value = "aStudyData">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "closure #1 in closure #1 in closure #1 in closure #1 in TimerView.body.getter:ContentView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "time">
+               value = "self.goalTime">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -66,10 +63,48 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "closure #1 in closure #1 in closure #1 in closure #1 in TimerView.body.getter:ContentView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "time">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in CalendarView.body.getter:CalenderView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "aAllData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "CustomCalendarViewModel.loadData():CalenderView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #6 in closure #1 in SettingView.body.getter:ContentView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "goalTime">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "getToday():StudyData.swift">
          <PersistentStrings>
             <PersistentString
                value = "Date()">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in DailyView.body.getter:CalenderView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "aStudyData">
+            </PersistentString>
+            <PersistentString
+               value = "date.date!">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

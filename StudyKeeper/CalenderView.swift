@@ -1,10 +1,50 @@
 import SwiftUI
 import SwiftData
 
+class DataProvider: ObservableObject {
+    @Published var aAllData: [StudyData] = []
+
+    init() {
+        loadData()
+    }
+
+    private func loadData() {
+        Task {
+            self.aAllData = await StudyDataService.shared.getAllStudyDatas()
+        }
+    }
+
+    func color(for date: DateComponents) -> UIColor {
+        let color100 = UIColor(red: 97/255, green: 130/255, blue: 100/255, alpha: 1.0)
+        let color80 = UIColor(red: 121/255, green: 172/255, blue: 120/255, alpha: 1.0)
+        let color60 = UIColor(red: 176/255, green: 217/255, blue: 177/255, alpha: 1.0)
+        let color0 = UIColor(red: 220/255, green: 240/255, blue: 220/255, alpha: 1.0)
+        var aColor = UIColor(.white)
+        
+        if let aDate = Calendar.current.date(from: date) {
+            let aDateStr = dateToString(date: aDate)
+            if let aStudyData = aAllData.first(where: { $0.dDate == aDateStr }) {
+                switch aStudyData.calcAchievementRate() {
+                case 100:
+                    aColor = color100
+                case 80 ..< 100:
+                    aColor = color80
+                case 60 ..< 80:
+                    aColor = color60
+                case 0 ..< 60:
+                    aColor = color0
+                default:
+                    aColor = UIColor(.white)
+                }
+            }
+        }
+        return aColor
+    }
+}
+
 struct CalendarView: View {
     @State private var dateSelected: DateComponents?
     @State var isShowDailyModal: Bool = false
-    //@Query private var studyDatas: [StudyData]
     
     var body: some View {
         CustomCalendarView(dateSelected: $dateSelected, isShowDailyModal: $isShowDailyModal)
@@ -17,10 +57,10 @@ struct CalendarView: View {
     }
 }
 
-
 struct CustomCalendarView: UIViewRepresentable {
     @Binding var dateSelected: DateComponents?
     @Binding var isShowDailyModal: Bool
+    @StateObject var dataProvider = DataProvider()
     
     func makeUIView(context: Context) -> UICalendarView {
         let view = UICalendarView()
@@ -43,6 +83,7 @@ struct CustomCalendarView: UIViewRepresentable {
                 dateSelection.selectedDate = nil // リセット処理
             }
         }
+        
     }
     
     class Coordinator: NSObject, UICalendarViewDelegate ,UICalendarSelectionSingleDateDelegate{
@@ -54,18 +95,10 @@ struct CustomCalendarView: UIViewRepresentable {
         }
         func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -> UICalendarView.Decoration? {
             
-            var aStudyData: [StudyData] = []
+            let aColor = self.parent.dataProvider.color(for: dateComponents)
             
-            let color100 = UIColor(red: 97/255, green: 130/255, blue: 100/255, alpha: 1.0)
-            let color80 = UIColor(red: 121/255, green: 172/255, blue: 120/255, alpha: 1.0)
-            let color60 = UIColor(red: 176/255, green: 217/255, blue: 177/255, alpha: 1.0)
-            let aDate = Calendar.current.date(from: dateComponents)
-            Task {
-                aStudyData =  await StudyDataService.shared.searchStudyDatas(keyword: dateToString(date: aDate!))
-                // 更新が必要な場合は適切なUI更新を行う
-            }
+            return .default(color: aColor, size: .large)
             
-            return .default(color: color60, size: .large)
         }
         func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
             parent.dateSelected = dateComponents
@@ -83,8 +116,6 @@ struct CustomCalendarView: UIViewRepresentable {
 struct DailyView : View {
     
     @Binding var dateSelected: DateComponents?
-    //@Query(sort: \StudyData.dDate) private var studyDatas: [StudyData]
-    //@Environment(\.modelContext) private var context
     @Query private var studyDatas: [StudyData]
     @State private var aStudyData: [StudyData] = []
     @State private var text: String = "swiftUI\nstoryboard"
@@ -97,8 +128,10 @@ struct DailyView : View {
                     .font(.title)
                     .padding()
             }
-            HStack {
-                //Text("\(aStudyData[0].dGoalTime)")
+            if(!aStudyData.isEmpty){
+                HStack {
+                    Text("\(aStudyData[0].dGoalTime)")
+                }
             }
 
             TextField("名前を入力してください", text: $text, axis: .vertical)

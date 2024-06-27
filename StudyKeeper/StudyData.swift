@@ -13,7 +13,7 @@ final class StudyData {
     var id: UUID
     var dDate: String
     var dSpentTime: Int
-    let dGoalTime: Int
+    var dGoalTime: Int
     var dContent: String?
 
     init(spentTime: Int, goalTime: Int, content: String? = nil) {
